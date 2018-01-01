@@ -8,6 +8,9 @@
 #include <queue>
 #include <forward_list>
 
+
+//Избавиться от рекурсии
+
 template <typename DataType>
 class BinaryTree
 {
@@ -41,9 +44,10 @@ public:
     int depth() noexcept;
 
     const BinaryTree<DataType>& operator=(const BinaryTree<DataType>&) noexcept ;
+
 private:
     void free_resources(Node<DataType>*) noexcept;
-    void transplant(Node<DataType>*,Node<DataType>*) noexcept;
+    void transplant(Node<DataType>*, Node<DataType>*) noexcept;
     Node<DataType>* minimum_node(Node<DataType>*) noexcept;
     Node<DataType>* maximum_node(Node<DataType>*) noexcept;
 
@@ -54,7 +58,97 @@ private:
     void _post_order_traverse(Node<DataType>*, std::function<void (Node<DataType>*)>) noexcept;
 
     int _depth(Node<DataType>*) noexcept;
+public:
+    Node<DataType>* big_right_rotate(Node<DataType>* node);
+    Node<DataType>* big_left_rotate(Node<DataType>* node);
+    Node<DataType>* small_right_rotate(Node<DataType>* node);
+    Node<DataType>* small_left_rotate(Node<DataType>* node);
 };
+
+
+template <typename DataType>
+Node<DataType>* BinaryTree<DataType>::big_right_rotate(Node<DataType> *node) {
+    Node<DataType>* b = node->left;
+    Node<DataType>* c = nullptr;
+    if(b){
+        c = b->right;
+        small_left_rotate(b);
+        small_right_rotate(node);
+    }
+    return c;
+}
+
+template <typename DataType>
+Node<DataType>* BinaryTree<DataType>::big_left_rotate(Node<DataType> *node) {
+    Node<DataType>* b = node->right;
+    Node<DataType>* c = nullptr;
+    if(b){
+        c = b->left;
+        small_right_rotate(b);
+        small_left_rotate(node);
+    }
+    return c;
+}
+
+
+template <typename DataType>
+Node<DataType>* BinaryTree<DataType>::small_right_rotate(Node<DataType> *node){
+    if(!node)
+        return nullptr;
+
+    Node<DataType>* b = node->left;
+
+    if(b) {
+        Node<DataType>* c = b->right;
+        node->left = c;
+
+        if(node->parent){
+            if(node->parent->left == node)
+                node->parent->left = b;
+            if(node->parent->right == node)
+                node->parent->right = b;
+        }
+        b->parent = node->parent;
+        node->parent = b;
+
+        if(c)
+            c->parent = node;
+
+        b->right = node;
+    }
+
+    return b;
+}
+
+template <typename DataType>
+Node<DataType>* BinaryTree<DataType>::small_left_rotate(Node<DataType> *node){
+    if(!node)
+        return nullptr;
+
+    Node<DataType>* b = node->right;
+
+    if(b) {
+        Node<DataType>* c = b->left;
+        node->right = c;
+
+        if(node->parent){
+            if(node->parent->left == node)
+                node->parent->left = b;
+            if(node->parent->right == node)
+                node->parent->right = b;
+        }
+
+        b->parent = node->parent;
+        node->parent = b;
+
+        if(c)
+            c->parent = node;
+
+        b->left = node;
+    }
+
+    return b;
+}
 
 template <typename DataType>
 BinaryTree<DataType>::BinaryTree() noexcept
