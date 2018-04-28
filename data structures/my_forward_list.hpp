@@ -43,7 +43,7 @@ public:
             return !this->operator==(iter);
         }
     };
-    
+
     Iterator begin() const{
         return Iterator(head);
     }
@@ -58,26 +58,26 @@ private:
     int capacity;
     Node* head;
     Iterator end_iterator;
-    
+
 public:
     ForwardList()
     :capacity(0), head(nullptr)
     {
     }
-    
+
     ForwardList(const ForwardList& copy_from){
         capacity=0;
         head=nullptr;
-        
+
         Node* temp_ptr=copy_from.head;
         if(temp_ptr == nullptr)
             return;
-        
+
         head = new Node;
         head->value = temp_ptr->value;
         head->next_node = nullptr;
         capacity = 1;
-        
+
         Node* tail = head;
         while(temp_ptr->next_node){
             tail->next_node = new Node;
@@ -88,11 +88,11 @@ public:
             capacity++;
         }
     }
-    
+
     ~ForwardList(){
         clear();
     }
-    
+
     ForwardList<T>& operator=(const ForwardList<T>& copy_from){
         if(this == &copy_from)
             return *this;
@@ -101,13 +101,13 @@ public:
         Node* temp_ptr=copy_from.head;
         if(temp_ptr == nullptr)
             return;
-        
-        
+
+
         head = new Node;
         head->value = temp_ptr->value;
         head->next_node = nullptr;
         capacity = 1;
-        
+
         Node* tail = head;
         while(temp_ptr->next_node){
             tail->next_node = new Node;
@@ -117,18 +117,18 @@ public:
             temp_ptr = temp_ptr->next_node;
             capacity++;
         }
-        
+
         return *this;
     }
-    
+
     int size() const{
         return capacity;
     }
-    
+
     bool empty() const{
         return capacity == 0;
     }
-    
+
     void push_front(T obj){
         Node* temp_head=head;
         head=new Node;
@@ -136,7 +136,7 @@ public:
         head->next_node=temp_head;
         capacity++;
     }
-    
+
     void erase_after(Iterator& iter){
         if(iter.ptr){
             Node* temp = iter.ptr->next_node;
@@ -147,12 +147,12 @@ public:
             }
         }
     }
-    
+
     void clear(){
         while(head != nullptr)
             pop_front();
     }
-    
+
     void pop_front(){
         Node* temp_head = head;
         head = head->next_node;
@@ -161,7 +161,7 @@ public:
             capacity--;
         }
     }
-    
+
     void insert_after(Iterator& iter, const T& insertion_value){
         if(iter.ptr == nullptr){
             if(head == nullptr)
@@ -174,7 +174,25 @@ public:
         iter.ptr->next_node=new_node;
         capacity++;
     }
-    
+
+    void reverse(){
+        if (!head)
+            return;
+
+        Node* curr = head;
+        Node* prev = nullptr;
+        Node* temp = curr->next_node;
+
+        while(temp){
+            temp = curr->next_node;
+            curr->next_node = prev;
+            prev = curr;
+            if(temp)
+                curr = temp;
+        }
+
+        head = curr;
+    }
 };
 
 
@@ -183,10 +201,16 @@ int main(){
     fl.push_front(3);
     fl.push_front(4);
     fl.push_front(5);
-    
+
     for(auto it = fl.begin(); it != fl.end(); ++it)
         cout << *it << endl;
-    
+
+    cout << "---" << endl;
+
+    fl.reverse();
+
+    for(auto it = fl.begin(); it != fl.end(); ++it)
+        cout << *it << endl;
+
     return 0;
 }
-
